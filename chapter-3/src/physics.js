@@ -28,6 +28,13 @@ const scene = new THREE.Scene()
 
 const gui = new GUI()
 
+const debugObject = {}
+debugObject.createSphere =()=>{
+  createSphere(0.5, { x: 0, y: 3, z: 0})
+}
+
+gui.add(debugObject, 'createSphere' )
+
 //!!!!!!!!  TEXTURES
 const textureLoader = new THREE.TextureLoader()
 const cubeTextureLoader = new THREE.CubeTextureLoader()
@@ -157,6 +164,7 @@ renderer.setPixelRatio( Math.min(window.devicePixelRatio, 2))
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace
 
 //! UTILS
+const objectsToUpdate = []
 
 const createSphere = (radius, position)=>{
   const mesh = new THREE.Mesh(
@@ -172,19 +180,26 @@ const createSphere = (radius, position)=>{
   scene.add(mesh)
 
   const shape = new CANNON.Sphere(radius)
-  const Body = new CANNON.Body({
+  const body = new CANNON.Body({
     mass: 1,
     shape: shape,
     position: new CANNON.Vec3(0, 3, 0),
     material: defaultMaterial
   })
 
-  Body.position.copy(position)
+  body.position.copy(position)
+  world.addBody(body)
 
-  world.addBody(Body)
+  //Save in objects to update
+  objectsToUpdate.push({
+    mesh: mesh,
+    body: body
+  })
+
 }
 
 createSphere(0.5, { x: 0, y: 3, z: 0})
+
 
 //! ANIMATE
 const clock = new THREE.Clock()
@@ -205,6 +220,10 @@ const tick = () =>{
     // )
 
     world.step(1/60, deltaTime, 3)
+
+    for (const object of objectsToUpdate) {
+      object.mesh.position.copy(object.body.position)
+    }
 
     // sphere.position.x = sphereBody.position.x;
     // sphere.position.y = sphereBody.position.y;
