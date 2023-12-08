@@ -30,7 +30,13 @@ const gui = new GUI()
 
 const debugObject = {}
 debugObject.createSphere =()=>{
-  createSphere(0.5, { x: 0, y: 3, z: 0})
+  createSphere(
+    Math.random() * 0.5,
+    { 
+      x: (Math.random() - 0.5) * 3,
+      y: 3,
+      z: (Math.random() - 0.5) * 3
+    })
 }
 
 gui.add(debugObject, 'createSphere' )
@@ -166,16 +172,17 @@ renderer.outputColorSpace = THREE.LinearSRGBColorSpace
 //! UTILS
 const objectsToUpdate = []
 
+const SphereGeometry = new THREE.SphereGeometry( 1, 20, 20)
+const sphereMaterial = new THREE.MeshStandardMaterial({
+  metalness: 0.3,
+  roughness: 0.4,
+  envMap: environmentMapTexture
+})
+
 const createSphere = (radius, position)=>{
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(radius, 20, 20),
-    new THREE.MeshStandardMaterial({
-      metalness: 0.3,
-      roughness: 0.4,
-      envMap: environmentMapTexture
-    })
-  )
+  const mesh = new THREE.Mesh(SphereGeometry, sphereMaterial)
   mesh.castShadow = true;
+  mesh.scale.set(radius, radius, radius)
   mesh.position.copy(position)
   scene.add(mesh)
 
