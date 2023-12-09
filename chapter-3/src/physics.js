@@ -29,6 +29,7 @@ const scene = new THREE.Scene()
 const gui = new GUI()
 
 const debugObject = {}
+
 debugObject.createSphere =()=>{
   createSphere(
     Math.random() * 0.5,
@@ -39,6 +40,19 @@ debugObject.createSphere =()=>{
     })
 }
 
+debugObject.createBox =()=>{
+  createBox(
+    Math.random(),
+    Math.random(),
+    Math.random(),
+    {
+      x: (Math.random - 0.5) * 3,
+      y: 3,
+      z: (Math.random - 0.5) * 3,
+    })
+}
+
+gui.add(debugObject, 'createBox' )
 gui.add(debugObject, 'createSphere' )
 
 //!!!!!!!!  TEXTURES
@@ -205,7 +219,37 @@ const createSphere = (radius, position)=>{
 
 }
 
-createSphere(0.5, { x: 0, y: 3, z: 0})
+const boxGeometry = new THREE.BoxGeometry(1,1,1)
+const boxMaterial = new THREE.MeshStandardMaterial({
+  metalness: 0.3,
+  roughness: 0.4,
+  envMap: environmentMapTexture
+})
+
+const createBox = (width,height, depth, position)=>{
+  const mesh = new THREE.Mesh(boxGeometry, boxMaterial)
+  mesh.scale.set(width, height, depth)
+  mesh.castShadow = true
+  mesh.position.copy(position)
+  scene.add(mesh)
+
+  const shape = new CANNON.Box(new CANNON.Vec3(width/2,height/2, depth/2))
+  const body = new CANNON.Body({
+    mass: 1,
+    shape: shape,
+    material: defaultMaterial,
+    position: new CANNON.Vec3(0, 3, 0)
+  })
+  body.position.copy(position)
+  world.addBody(body)
+  objectsToUpdate.push({
+    mesh, 
+    body
+  })
+}
+
+
+// createSphere(0.5, { x: 0, y: 3, z: 0})
 
 
 //! ANIMATE
