@@ -46,9 +46,9 @@ debugObject.createBox =()=>{
     Math.random(),
     Math.random(),
     {
-      x: (Math.random - 0.5) * 3,
+      x: (Math.random() - 0.5) * 3,
       y: 3,
-      z: (Math.random - 0.5) * 3,
+      z: (Math.random() - 0.5) * 3,
     })
 }
 
@@ -223,17 +223,18 @@ const boxGeometry = new THREE.BoxGeometry(1,1,1)
 const boxMaterial = new THREE.MeshStandardMaterial({
   metalness: 0.3,
   roughness: 0.4,
-  envMap: environmentMapTexture
+  envMap: environmentMapTexture,
+  envMapIntensity: 0.5
 })
 
-const createBox = (width,height, depth, position)=>{
+const createBox = (width,height, depth, position) =>{
   const mesh = new THREE.Mesh(boxGeometry, boxMaterial)
-  mesh.scale.set(width, height, depth)
   mesh.castShadow = true
+  mesh.scale.set(width, height, depth)
   mesh.position.copy(position)
   scene.add(mesh)
 
-  const shape = new CANNON.Box(new CANNON.Vec3(width/2,height/2, depth/2))
+  const shape = new CANNON.Box(new CANNON.Vec3(width * 0.5,height * 0.5, depth * 0.5))
   const body = new CANNON.Body({
     mass: 1,
     shape: shape,
@@ -243,14 +244,14 @@ const createBox = (width,height, depth, position)=>{
   body.position.copy(position)
   world.addBody(body)
   objectsToUpdate.push({
-    mesh, 
-    body
+    mesh: mesh, 
+    body: body
   })
 }
 
 
 // createSphere(0.5, { x: 0, y: 3, z: 0})
-
+// createBox(1, 1.5, 2, { x: 0, y: 3, z: 0 })
 
 //! ANIMATE
 const clock = new THREE.Clock()
@@ -274,6 +275,7 @@ const tick = () =>{
 
     for (const object of objectsToUpdate) {
       object.mesh.position.copy(object.body.position)
+      object.mesh.quaternion.copy(object.body.quaternion)
     }
 
     // sphere.position.x = sphereBody.position.x;
