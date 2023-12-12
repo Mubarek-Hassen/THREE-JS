@@ -38,6 +38,13 @@ debugObject.createSphere =()=>{
       y: 3,
       z: (Math.random() - 0.5) * 3
     })
+  createSphere(
+    Math.random() * 0.5,
+    { 
+      x: (Math.random() - 0.5) * 3,
+      y: 3,
+      z: (Math.random() - 0.5) * 3
+    })
 }
 
 debugObject.createBox =()=>{
@@ -74,6 +81,7 @@ const environmentMapTexture = cubeTextureLoader.load([
 // Physics World
 const world = new CANNON.World()
 world.gravity.set(0, -9.82, 0)
+world.broadphase = new CANNON.SAPBroadphase(world)
 
 //MATERIAL
 // const concreteMaterial = new CANNON.Material("concrete")
