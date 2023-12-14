@@ -28,6 +28,12 @@ const scene = new THREE.Scene()
 
 const gui = new GUI()
 
+//! SOUND
+const hitSound = new Audio("/sounds/hit.mp3")
+const playHitSound =()=>{
+  hitSound.play()
+}
+
 const debugObject = {}
 
 debugObject.createSphere =()=>{
@@ -251,6 +257,7 @@ const createBox = (width,height, depth, position) =>{
     position: new CANNON.Vec3(0, 3, 0)
   })
   body.position.copy(position)
+  body.addEventListener("collide", playHitSound)
   world.addBody(body)
   objectsToUpdate.push({
     mesh: mesh, 
