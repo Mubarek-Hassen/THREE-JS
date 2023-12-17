@@ -1,6 +1,6 @@
 import * as THREE from "three"
 import GUI from "lil-gui"
-import CANNON from 'cannon'
+import * as CANNON from 'cannon-es'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 
@@ -30,8 +30,13 @@ const gui = new GUI()
 
 //! SOUND
 const hitSound = new Audio("/sounds/hit.mp3")
-const playHitSound =()=>{
-  hitSound.play()
+const playHitSound =(collision)=>{
+  const impactStrength = collision.contact.getImpactVelocityAlongNormal()
+  if( impactStrength > 1.5){
+    hitSound.volume = Math.random()
+    hitSound.currentTime = 0
+    hitSound.play()
+  }
 }
 
 const debugObject = {}
@@ -65,8 +70,18 @@ debugObject.createBox =()=>{
     })
 }
 
+debugObject.reset =()=>{
+  for (const object of objectsToUpdate) {
+    object.body.removeEventListener("collide", playHitSound)
+    world.removeBody(object.body)
+    scene.remove(object.mesh)
+  }
+  objectsToUpdate.splice(0, objectsToUpdate.length)
+}
+
 gui.add(debugObject, 'createBox' )
 gui.add(debugObject, 'createSphere' )
+gui.add(debugObject, 'reset' )
 
 //!!!!!!!!  TEXTURES
 const textureLoader = new THREE.TextureLoader()
@@ -224,6 +239,7 @@ const createSphere = (radius, position)=>{
   })
 
   body.position.copy(position)
+  body.addEventListener("collide", playHitSound)
   world.addBody(body)
 
   //Save in objects to update
