@@ -144,7 +144,7 @@ floorBody.quaternion.setFromAxisAngle(
   Math.PI/2
 )
 
-world.addBody(floorBody)
+world.addBody(floorBody) 
 
 //!!!!!!!!  OBJECTS
 
@@ -296,7 +296,7 @@ const tick = () =>{
     oldElapsedTime = elapsedTime
 
     
-    //* UPDATE PHYSICS THE WORLD
+    //* UPDATE PHYSICS WORLD
 
     // sphereBody.applyForce(
     //   new CANNON.Vec3(-0.5, 0, 0),
