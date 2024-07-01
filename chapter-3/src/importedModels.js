@@ -3,6 +3,7 @@ import GUI from "lil-gui"
 import * as CANNON from 'cannon-es'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
 
 // THREE.ColorManagement.enabled = false;
 const canvas = document.querySelector("canvas.webgl")
@@ -38,14 +39,28 @@ window.addEventListener("resize", ()=>{
 
 //*   MODELS
 
+const dracoLoader = new DRACOLoader()
+dracoLoader.setDecoderPath("/draco/")
+
 const gltfLoader = new GLTFLoader()
+
+gltfLoader.setDRACOLoader(dracoLoader)
 
 // add the path to the model, then 3 callback(arrow) functions (success, progress, error) (err and progress not required)
 gltfLoader.load(
-  "/models/Duck/glTF/Duck.gltf", // the path to the model
+  "/models/Duck/glTF-Draco/Duck.gltf", // the path to the model
   (gltf)=>{
-    console.log(gltf);
-    scene.add(gltf.scene.children[0])
+    // console.log(gltf);
+    // scene.add(gltf.scene.children[0])
+
+    // while(gltf.scene.children.length){
+    //   scene.add(gltf.scene.children[0])
+     // }
+
+    const children = [...gltf.scene.children]
+    for (const child of children) {
+      scene.add(child)
+    }
   }
   // (progress)=>{
   //   console.log("progress");
