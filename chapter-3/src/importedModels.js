@@ -5,7 +5,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader"
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader"
 
-// THREE.ColorManagement.enabled = false;
+THREE.ColorManagement.enabled = false;
 const canvas = document.querySelector("canvas.webgl")
 document.title = "21 - Imported models"
 const gui = new GUI()
@@ -46,21 +46,33 @@ const gltfLoader = new GLTFLoader()
 
 gltfLoader.setDRACOLoader(dracoLoader)
 
+let mixer = null
+
 // add the path to the model, then 3 callback(arrow) functions (success, progress, error) (err and progress not required)
 gltfLoader.load(
-  "/models/Duck/glTF-Draco/Duck.gltf", // the path to the model
+  "/models/Fox/glTF/Fox.gltf", // the path to the model
   (gltf)=>{
-    // console.log(gltf);
+    console.log(gltf);
     // scene.add(gltf.scene.children[0])
+
+    // for the fox we adjusted the scale and added the gltf scene to the scene
+    gltf.scene.scale.set(0.025,0.025,0.025)
+    scene.add(gltf.scene)
+
+    mixer = new THREE.AnimationMixer(gltf.scene)
+    const action = mixer.clipAction(gltf.animations[1])
+    action.play()
 
     // while(gltf.scene.children.length){
     //   scene.add(gltf.scene.children[0])
      // }
-
-    const children = [...gltf.scene.children]
-    for (const child of children) {
-      scene.add(child)
-    }
+    
+    // When we have multiple meshes in the children array of the scene
+    // const children = [...gltf.scene.children]
+    // for (const child of children) {
+    //   scene.add(child)
+    // }
+  
   }
   // (progress)=>{
   //   console.log("progress");
@@ -112,7 +124,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-// renderer.outputColorSpace = THREE.LinearSRGBColorSpace
+renderer.outputColorSpace = THREE.LinearSRGBColorSpace
 
 //! TICK
 const clock = new THREE.Clock()
@@ -124,6 +136,9 @@ function tick(){
   previousTime = elapsedTime
 
   //* UPDATE OBJECTS
+  if(mixer !== null){
+    mixer.update(deltaTime)
+  }
 
   //* UPDATE CONTROLS
   controls.update()
