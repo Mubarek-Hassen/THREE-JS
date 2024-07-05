@@ -24,6 +24,16 @@ window.addEventListener("resize", ()=>{
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
+
+const mouse = new THREE.Vector2()
+window.addEventListener("mousemove", (event)=>{
+  mouse.x = event.clientX / sizes.width * 2 - 1
+  mouse.y = -(event.clientY / sizes.height) * 2 + 1
+  console.log(mouse);
+
+})
+
+
 //! CONTROLS
 const controls = new OrbitControls(camera, canvas)
 controls.target.set(0, 0.75, 0)
@@ -75,6 +85,8 @@ function tick(){
   const deltaTime = elapsedTime - previousTime;
   previousTime = elapsedTime
 
+  raycaster.setFromCamera(mouse, camera)
+
   object1.position.y = Math.sin(elapsedTime * 0.3) * 1.5
   object2.position.y = Math.sin(elapsedTime * 0.8) * 1.5
   object3.position.y = Math.sin(elapsedTime * 1.4) * 1.5
@@ -83,15 +95,15 @@ function tick(){
   // const rayDirection = new THREE.Vector3(1, 0, 0)
   // rayDirection.normalize()
   // raycaster.set(rayOrigin, rayDirection)
-  // const intersects = raycaster.intersectObjects([object1, object2, object3])
+  const intersects = raycaster.intersectObjects([object1, object2, object3])
 
-  // for (const obj of [object1, object2, object3]) {
-  //   obj.material.color.set("#ff0000")
-  // }
+  for (const obj of [object1, object2, object3]) {
+    obj.material.color.set("#ff0000")
+  }
 
-  // for (const intersect of intersects) {
-  //   intersect.object.material.color.set("#0000ff")
-  // }
+  for (const intersect of intersects) {
+    intersect.object.material.color.set("#0000ff")
+  }
   
 
 
